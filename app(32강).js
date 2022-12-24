@@ -1,4 +1,6 @@
 const http = require("http");
+const fs = require("fs");
+// fs = fileSystem (파일을 만들고 그 내용을 저장할 때 쓴다.)
 // ./http.js => search http file in local
 // const(변경될일 없음)
 
@@ -9,6 +11,8 @@ const http = require("http");
 // node는 req(요청)을 받은 후에 중지시켜주지 않으면 계속 지속된다.
 const server = http.createServer((req, res) => {
     const url = req.url;
+    const method = req.method;
+    // console.log(method);
     if (url === "/") {
         res.setHeader("Content-Type", "text/html");
         res.write("<html>");
@@ -25,6 +29,26 @@ const server = http.createServer((req, res) => {
     // 데이터 요청 url = /, method = "GET", headers = {} <-- metadata
     // process.exit();
     // process.exit()을 활용하면 요청을 받고 process를 종료시킨다.
+    if (url === "/message" && method === "POST") {
+        const body = [];
+        req.on("data", (chunk) => {
+            console.log(chunk);
+            body.push(chunk);
+        });
+        req.on("end", () => {
+            const parsedBody = Buffer.concat(body).toString();
+            console.log(parsedBody);
+            const message = parsedBody.split("=")[1];
+            console.log(message);
+            fs.writeFileSync("message.text", message);
+        });
+        res.statusCode = 302;
+        // URL 리디렉션을 수행하는 일반적인 방법입니다.
+        res.setHeader("Location", "/");
+        // 기본 Header 설정
+        return res.end();
+        // 아래 코드가 실행되지 않게 return res.end();
+    }
     res.setHeader("Content-Type", "text/html");
     res.write("<html>");
     res.write("<head><title>My First Page</title></head>");
