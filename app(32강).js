@@ -30,24 +30,27 @@ const server = http.createServer((req, res) => {
     // process.exit();
     // process.exit()을 활용하면 요청을 받고 process를 종료시킨다.
     if (url === "/message" && method === "POST") {
+        // 1. 우선 해당 조건문에 해당되면,if문 이하의 함수들을 레지스트리에 저장 한다.
         const body = [];
         req.on("data", (chunk) => {
-            console.log(chunk);
+            // console.log(chunk);
             body.push(chunk);
         });
-        req.on("end", () => {
+        return req.on("end", () => {
             const parsedBody = Buffer.concat(body).toString();
-            console.log(parsedBody);
+            // console.log(parsedBody);
             const message = parsedBody.split("=")[1];
-            console.log(message);
-            fs.writeFileSync("message.text", message);
+            // console.log(message);
+            fs.writeFile("message.text", message, (err) => {
+                // writeFileSync. && writeFile 차이점 알아보기
+                res.statusCode = 302;
+                // URL 리디렉션을 수행하는 일반적인 방법입니다.
+                res.setHeader("Location", "/");
+                // 기본 Header 설정
+                return res.end();
+                // 아래 코드가 실행되지 않게 return res.end();
+            });
         });
-        res.statusCode = 302;
-        // URL 리디렉션을 수행하는 일반적인 방법입니다.
-        res.setHeader("Location", "/");
-        // 기본 Header 설정
-        return res.end();
-        // 아래 코드가 실행되지 않게 return res.end();
     }
     res.setHeader("Content-Type", "text/html");
     res.write("<html>");
