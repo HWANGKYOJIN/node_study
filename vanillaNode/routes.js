@@ -30,7 +30,7 @@ const requestHandler = (req, res) => {
         return req.on("end", () => {
             const parsedBody = Buffer.concat(body).toString();
             // console.log(parsedBody);
-            const message = parsedBody.split("=")[0];
+            const message = parsedBody.split("=")[1];
             // const message = parsedBody.split("=")[0]; <-- error code
             // breakPoin 활용하여 debug 연습
             // console.log(message);
